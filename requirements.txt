@@ -23,7 +23,7 @@ ipykernel
 ipython
 jedi==0.18.2
 jupyter_client
-jupyter_core==5.2.0
+jupyter_core
 kiwisolver==1.4.4
 matplotlib==3.7.0
 matplotlib-inline==0.1.6
