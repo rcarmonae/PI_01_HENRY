@@ -35,7 +35,9 @@ df_crew['crew'] = df_crew['crew'].apply(lambda x: ast.literal_eval(x) if pd.notn
 
 ########## 2. DESARROLLO API: DISPONIBILIZAR LOS DATOS USANDO FastAPI #############
 app = FastAPI()
-
+@app.get('/')
+def bienvenida():
+    return 'HENRY: Proyecto Individual I - Rosa Carmona'
 
 @app.get('/cantidad_filmaciones_mes/{mes}')
 def cantidad_filmaciones_mes(mes:str):
