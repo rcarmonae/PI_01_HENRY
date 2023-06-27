@@ -1,29 +1,9 @@
 from fastapi import FastAPI
 import requests
 from io import StringIO
-#from fastapi.encoders import jsonable_encoder
-#from fastapi.responses import JSONResponse
 import pandas as pd
 import ast
-#import gdown
-
 ########## 1. OBTENCIÓN DE LOS DATASETS #############
-
-'''
-#1.0 Descargar los datasets en formato csv y crea los dataframes que se van a consultar
-url_movies = 'https://drive.google.com/uc?id=1LYliTXV6FADRqej88ixcr5igXoYCibEY&export=download'
-url_movies_cast = 'https://drive.google.com/uc?id=1LScbmoB4tHy_lyWL2N2S45hk0BLjkHtE&export=download'
-url_movies_crew = 'https://drive.google.com/uc?id=1LVYzsoXO_rNGCwWBfjo4v3UOUnosnT1E&export=download'
-
-gdown.download(url_movies, 'csv_movies.csv', quiet=False, format='csv')
-gdown.download(url_movies_cast, 'csv_cast.csv', quiet=False, format='csv')
-gdown.download(url_movies_crew, 'csv_crew.csv', quiet=False, format='csv')
-
-df_movies = pd.read_csv('csv_movies.csv', low_memory=False)
-df_cast = pd.read_csv('csv_cast.csv', low_memory=False)
-df_crew = pd.read_csv('csv_crew.csv', low_memory=False)
-'''
-
 '''URL a los datos crudos (raw) en Github '''
 url_movies = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_dataset_filtrado_RMCE.csv'
 url_cast = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_cast_actor_RMCE.csv'
@@ -47,17 +27,6 @@ df_crew['revenue'] = pd.to_numeric(df_crew['revenue'], errors='coerce')
 df_crew['budget'] = pd.to_numeric(df_crew['budget'], errors='coerce')
 # -----------
 ''' 1.1 Acceso a los diccionarios sin desanidar:'''
-
-############ESTA PARTE NO ESTA CONTENIDA EN EL DATASET DE movies_dataset_filtrado_RMCE.csv -- df_movies 
-# Y NO SE SI SE VA A OCUPAR PARA EL MODELO DE ML######
-'''Para hacer legibles las LISTAS de DICCIONARIOS:
-   Convierte las listas a diccionarios para consultas posteriores'''
-#columna_list_variables_movies= ['genres','production_companies','production_countries', 'spoken_languages']
-'''Del dataset movies'''
-#for columna_list in columna_list_variables_movies:
-#    df[columna_list] = df[columna_list].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
-###############################
-
 '''Del dataset df_cast'''
 df_cast['cast'] = df_cast['cast'].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
 '''Del dataset df_cast'''
@@ -65,7 +34,6 @@ df_crew['crew'] = df_crew['crew'].apply(lambda x: ast.literal_eval(x) if pd.notn
 
 
 ########## 2. DESARROLLO API: DISPONIBILIZAR LOS DATOS USANDO FastAPI #############
-
 app = FastAPI()
 
 
@@ -137,9 +105,7 @@ def score_titulo(titulo:str):
             'Score': score
     }
     
-    #respuesta = pd.DataFrame(respuesta)
 
-    #return respuesta
     return {'titulo':titulo, 'anio':estreno, 'popularidad':score}
 
 @app.get('/votos_titulo/{titulo}')
@@ -165,8 +131,7 @@ def votos_titulo(titulo:str):
         return {'titulo':titulo,'Numero de votos':int(votos_num),'Promedio de votos':float(votos_prom)}
             
     else: 
-       #return print ('El número de votaciones es menor a 2000. No devuelve información para este título')
-    
+       
         return {'El número de votaciones es menor a 2000. No devuelve información para este título'}
 
 @app.get('/get_actor/{nombre_actor}')
@@ -189,13 +154,7 @@ def get_actor(nombre_actor:str):
 
     # Calcula el PROMEDIO del retorno de todas sus películas
     retorno_promedio = filtrado['return'].mean()
-    #print('Número de películas en las que ha participado como actor: ', cantidad_pelis)
-    #print('El éxito del actor, de acuerdo a la suma del retorno de inversión de todas sus películas es: ', retorno_total)
-    #print('El promedio del retorno de inversión de todas sus películas es: ', retorno_promedio)
-    #return print('Número de películas en las que ha participado como actor: ', cantidad_pelis, 
-    #                '\nEl éxito del actor, de acuerdo a la suma del retorno de inversión de todas sus películas es: ', retorno_total,
-    #                '\nEl promedio del retorno de inversión de todas sus películas es: ', retorno_promedio)  
-
+    
     return {'actor':nombre_actor, 'cantidad_filmaciones':cantidad_pelis, 'retorno_total':retorno_total, 'retorno_promedio':retorno_promedio}
 
 @app.get('/get_director/{nombre_director}')
@@ -212,18 +171,8 @@ def get_director(nombre_director:str):
 
      #rb = pd.DataFrame({'REVENUE': df['revenue'], 'FECHA DE LANZAMIENTO': df['release_date']})
      respuestas = pd.DataFrame({'PELÍCULA': filtrado['title'],'FECHA DE LANZAMIENTO': filtrado['release_date'],'COSTO': filtrado['budget'],'GANANCIA': filtrado['revenue'], 'RETORNO': filtrado['return']})
-     
-  
-
-     #Dar formato a la tabla de salida 
-     #pd.set_option('display.colheader_justify', 'center')
-     #pd.set_option('display.float_format', lambda x: f'{x:.2f}')
-     
-     #return print('El éxito del actor, de acuerdo a la suma del retorno de inversión de todas sus películas es: ', retorno_total_director,'\nA continuación, alguna información acerca de su filmografía:\n',respuestas.to_string(index=False))
+        
      return 'El éxito del director, de acuerdo a la suma del retorno de inversión de todas sus películas es: ', retorno_total_director,'continuación, alguna información acerca de su filmografía:',respuestas
-     #return {'director':nombre_director, 'retorno_total_director':retorno_total_director, 
-        #'peliculas':filtrado['title'], 'anio':filtrado['release_date'], 'retorno_pelicula':filtrado['return'], 
-        #'budget_pelicula':filtrado['budget'], 'revenue_pelicula':filtrado['revenue']}
 
 # ML
 #@app.get('/recomendacion/{titulo}')
