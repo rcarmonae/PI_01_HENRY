@@ -1,13 +1,16 @@
 from fastapi import FastAPI
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+import requests
+from io import StringIO
+#from fastapi.encoders import jsonable_encoder
+#from fastapi.responses import JSONResponse
 import pandas as pd
 import ast
-import gdown
+#import gdown
 
 ########## 1. OBTENCIÓN DE LOS DATASETS #############
-'''1.0 Descargar los datasets en formato csv y crea los dataframes que se van a consultar'''
 
+'''
+#1.0 Descargar los datasets en formato csv y crea los dataframes que se van a consultar
 url_movies = 'https://drive.google.com/uc?id=1LYliTXV6FADRqej88ixcr5igXoYCibEY&export=download'
 url_movies_cast = 'https://drive.google.com/uc?id=1LScbmoB4tHy_lyWL2N2S45hk0BLjkHtE&export=download'
 url_movies_crew = 'https://drive.google.com/uc?id=1LVYzsoXO_rNGCwWBfjo4v3UOUnosnT1E&export=download'
@@ -19,6 +22,22 @@ gdown.download(url_movies_crew, 'csv_crew.csv', quiet=False, format='csv')
 df_movies = pd.read_csv('csv_movies.csv', low_memory=False)
 df_cast = pd.read_csv('csv_cast.csv', low_memory=False)
 df_crew = pd.read_csv('csv_crew.csv', low_memory=False)
+'''
+
+'''URL a los datos crudos (raw) en Github '''
+url_movies = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_dataset_filtrado_RMCE.csv'
+url_cast = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_cast_actor_RMCE.csv'
+url_crew = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_crew_director_RMCE.csv'
+
+'''Solicita el contenido de las URL'''
+response_movies = requests.get(url_movies)
+response_cast = requests.get(url_cast)
+response_crew = requests.get(url_crew)
+
+'''Convierte los csv a dataframe'''
+df_movies = pd.read_csv(StringIO(response_movies.text))
+df_cast = pd.read_csv(StringIO(response_cast.text))
+df_crew = pd.read_csv(StringIO(response_crew.text))
 
 '''Cambia al tipo de dato necesario'''
 df_movies['release_date'] = pd.to_datetime(df_movies['release_date'], errors = 'coerce')
