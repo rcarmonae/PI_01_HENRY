@@ -204,7 +204,7 @@ def recomendacion(movie_title:str):
     # Combinar las características de colección, género, director, casa productora y pais 
     df_sr['features'] = df_sr['collection'] + ' ' + df_sr['genres_list'] + ' ' + df_sr['directors'] + ' ' + df_sr['production'] + ' ' + df_sr['country'] '''
 
-    # Vectorizar las características usando CountVectorizer
+    # Vectorizar las variables  usando CountVectorizer
     vectorizer = CountVectorizer()
     features_matrix = vectorizer.fit_transform(df_sr['features'])
 
