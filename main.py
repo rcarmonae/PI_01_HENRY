@@ -187,7 +187,6 @@ def get_director(nombre_director:str):
         
      return 'El éxito del director, de acuerdo a la suma del retorno de inversión de todas sus películas es: ', retorno_total_director,'continuación, alguna información acerca de su filmografía:',respuestas
 
-# ML
 @app.get('/recomendacion/{movie_title}')
 def recomendacion(movie_title:str):
     #Ingresas un nombre de pelicula y te recomienda las similares en una lista'''
