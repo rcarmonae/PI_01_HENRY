@@ -3,21 +3,27 @@ import requests
 from io import StringIO
 import pandas as pd
 import ast
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.neighbors import NearestNeighbors
+
 ########## 1. OBTENCIÓN DE LOS DATASETS #############
 '''URL a los datos crudos (raw) en Github '''
 url_movies = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_dataset_filtrado_RMCE.csv'
 url_cast = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_cast_actor_RMCE.csv'
 url_crew = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_crew_director_RMCE.csv'
+url_sr = 
 
 '''Solicita el contenido de las URL'''
 response_movies = requests.get(url_movies)
 response_cast = requests.get(url_cast)
 response_crew = requests.get(url_crew)
+response_sr = requests.get(url_sr)
 
 '''Convierte los csv a dataframe'''
 df_movies = pd.read_csv(StringIO(response_movies.text))
 df_cast = pd.read_csv(StringIO(response_cast.text))
 df_crew = pd.read_csv(StringIO(response_crew.text))
+df_sr = pd.read_csv(StringIO(response_sr.text))
 
 '''Cambia al tipo de dato necesario'''
 df_movies['release_date'] = pd.to_datetime(df_movies['release_date'], errors = 'coerce')
@@ -31,6 +37,11 @@ df_crew['budget'] = pd.to_numeric(df_crew['budget'], errors='coerce')
 df_cast['cast'] = df_cast['cast'].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
 '''Del dataset df_cast'''
 df_crew['crew'] = df_crew['crew'].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
+'''Del dataset df_sr'''
+columna_list_variables= ['genres_list','directors','production','country']
+for columna_list in columna_list_variables:
+    df_sr[columna_list] = df_sr[columna_list].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
+df_sr['collection'] = df_sr['collection'].fillna('') 
 
 
 ########## 2. DESARROLLO API: DISPONIBILIZAR LOS DATOS USANDO FastAPI #############
@@ -177,7 +188,43 @@ def get_director(nombre_director:str):
      return 'El éxito del director, de acuerdo a la suma del retorno de inversión de todas sus películas es: ', retorno_total_director,'continuación, alguna información acerca de su filmografía:',respuestas
 
 # ML
-#@app.get('/recomendacion/{titulo}')
-#def recomendacion(titulo:str):
-#    '''Ingresas un nombre de pelicula y te recomienda las similares en una lista'''
-#    return {'lista recomendada': respuesta}
+@app.get('/recomendacion/{movie_title}')
+def recomendacion(movie_title:str):
+    #Ingresas un nombre de pelicula y te recomienda las similares en una lista'''
+
+    #--------- Preparación de los datos---------
+    # Convierte los valores a strings
+    #movies_data = df_sr.copy()
+    df_sr['genres_list'] = df_sr['genres_list'].apply(lambda x: ' '.join(x))
+    df_sr['directors'] = df_sr['directors'].apply(lambda x: ' '.join(x))
+    df_sr['production'] = df_sr['production'].apply(lambda x: ' '.join(x))
+    df_sr['country'] = df_sr['country'].apply(lambda x: ' '.join(x))
+
+    #--------- Construcción del modelo ---------
+
+    # Combinar las características de colección, género, director, casa productora y pais 
+    df_sr['features'] = df_sr['collection'] + ' ' + df_sr['genres_list'] + ' ' + df_sr['directors'] + ' ' + df_sr['production'] + ' ' + df_sr['country'] 
+
+    # Vectorizar las características usando CountVectorizer
+    vectorizer = CountVectorizer()
+    features_matrix = vectorizer.fit_transform(df_sr['features'])
+
+    # Entrenar el modelo contentKNN
+    knn_model = NearestNeighbors(metric='cosine', algorithm='brute')
+    knn_model.fit(features_matrix)
+
+    # Función para hacer recomendaciones de películas
+    #def recomendacion(movie_title):
+    # Buscar el índice de la película de entrada
+    movie_index = df_sr[df_sr['title'] == movie_title].index.values[0]
+
+    # Encontrar las películas más similares utilizando el modelo contentKNN
+    distances, indices = knn_model.kneighbors(features_matrix[movie_index], n_neighbors=5+1)
+
+    # Obtener los índices ordenados de mayor a menor similitud
+    sorted_indices = indices[0][::1]
+
+    # Obtener los títulos de las películas recomendadas en orden descendente 
+    recommended_movies = df_sr.iloc[sorted_indices[1:]]['title'].values.tolist()
+
+    return {'Las películas recomendadas, ordenadas de mayor a menor similitud son': recommended_movies}
