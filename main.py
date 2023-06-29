@@ -37,12 +37,6 @@ df_crew['budget'] = pd.to_numeric(df_crew['budget'], errors='coerce')
 df_cast['cast'] = df_cast['cast'].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
 '''Del dataset df_cast'''
 df_crew['crew'] = df_crew['crew'].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
-'''Del dataset df_sr'''
-#columna_list_variables= ['genres_list','directors','production','country']
-#for columna_list in columna_list_variables:
-#    df_sr[columna_list] = df_sr[columna_list].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
-#df_sr['collection'] = df_sr['collection'].fillna('') 
-
 
 ########## 2. DESARROLLO API: DISPONIBILIZAR LOS DATOS USANDO FastAPI #############
 app = FastAPI()
@@ -190,20 +184,6 @@ def get_director(nombre_director:str):
 @app.get('/recomendacion/{movie_title}')
 def recomendacion(movie_title:str):
     #Ingresas un nombre de pelicula y te recomienda las similares en una lista'''
-
-    '''#--------- Preparación de los datos---------
-    # Convierte los valores a strings
-    #movies_data = df_sr.copy()
-    df_sr['genres_list'] = df_sr['genres_list'].apply(lambda x: ' '.join(x))
-    df_sr['directors'] = df_sr['directors'].apply(lambda x: ' '.join(x))
-    df_sr['production'] = df_sr['production'].apply(lambda x: ' '.join(x))
-    df_sr['country'] = df_sr['country'].apply(lambda x: ' '.join(x))
-
-    #--------- Construcción del modelo ---------
-
-    # Combinar las características de colección, género, director, casa productora y pais 
-    df_sr['features'] = df_sr['collection'] + ' ' + df_sr['genres_list'] + ' ' + df_sr['directors'] + ' ' + df_sr['production'] + ' ' + df_sr['country'] '''
-
     # Vectorizar las variables  usando CountVectorizer
     vectorizer = CountVectorizer()
     features_matrix = vectorizer.fit_transform(df_sr['features'])
