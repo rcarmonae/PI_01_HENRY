@@ -11,19 +11,18 @@ from sklearn.neighbors import NearestNeighbors
 url_movies = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_dataset_filtrado_RMCE.csv'
 url_cast = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_cast_actor_RMCE.csv'
 url_crew = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/movies_crew_director_RMCE.csv'
-url_sr = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/sis_rec_RMCE_reduced.csv'
+
 
 '''Solicita el contenido de las URL'''
 response_movies = requests.get(url_movies)
 response_cast = requests.get(url_cast)
 response_crew = requests.get(url_crew)
-response_sr = requests.get(url_sr)
+
 
 '''Convierte los csv a dataframe'''
 df_movies = pd.read_csv(StringIO(response_movies.text))
 df_cast = pd.read_csv(StringIO(response_cast.text))
 df_crew = pd.read_csv(StringIO(response_crew.text))
-df_sr = pd.read_csv(StringIO(response_sr.text))
 
 '''Cambia al tipo de dato necesario'''
 df_movies['release_date'] = pd.to_datetime(df_movies['release_date'], errors = 'coerce')
@@ -184,6 +183,10 @@ def get_director(nombre_director:str):
 @app.get('/recomendacion/{movie_title}')
 def recomendacion(movie_title:str):
     #Ingresas un nombre de pelicula y te recomienda las similares en una lista'''
+    url_sr = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/sis_rec_RMCE_reduced.csv'
+    response_sr = requests.get(url_sr)
+    df_sr = pd.read_csv(StringIO(response_sr.text))
+
     # Vectorizar las variables  usando CountVectorizer
     vectorizer = CountVectorizer()
     features_matrix = vectorizer.fit_transform(df_sr['features'])
