@@ -186,7 +186,7 @@ def recomendacion(movie_title:str):
     url_sr = 'https://raw.githubusercontent.com/rcarmonae/PI_01_HENRY/main/sis_rec_RMCE_reduced.csv'
     response_sr = requests.get(url_sr)
     df_sr = pd.read_csv(StringIO(response_sr.text))
-
+    # df_sr['features'] contiene la cadena de texto con todas las variables que van a entrenar al modelo NN
     # Vectorizar las variables  usando CountVectorizer
     vectorizer = CountVectorizer()
     features_matrix = vectorizer.fit_transform(df_sr['features'])
@@ -195,13 +195,11 @@ def recomendacion(movie_title:str):
     knn_model = NearestNeighbors(metric='cosine', algorithm='brute')
     knn_model.fit(features_matrix)
 
-    # Función para hacer recomendaciones de películas
-    #def recomendacion(movie_title):
     # Buscar el índice de la película de entrada
     movie_index = df_sr[df_sr['title'] == movie_title].index.values[0]
 
     # Encontrar las películas más similares utilizando el modelo contentKNN
-    distances, indices = knn_model.kneighbors(features_matrix[movie_index], n_neighbors=5+1)
+    _, indices = knn_model.kneighbors(features_matrix[movie_index], n_neighbors=5+1)
 
     # Obtener los índices ordenados de mayor a menor similitud
     sorted_indices = indices[0][::1]
