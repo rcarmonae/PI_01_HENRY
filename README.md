@@ -4,11 +4,14 @@ El Proyecto Individual 1 HENRY: Machine Learning Operations consiste en un proye
 A continuación, se describen los procesos y archivos correspondientes a cada fase, los cuales se encuentran en este repositorio:
 
 ## 1) Procesamiento de los datos y creación de una API
-Consistió en la extracción y transformación de las base de datos originales provistas por HENRY. A partir de estas bases de datos se extrae información de diccionarios y listas de diccionarios (sin desanidar) para generar nuevos archivos CSV que se utilizan posteriormente en el EDA y Sistema de Recomendación. Durante esta etapa también se construyó una aplicación utilizando las herramientas FastAPI y Render. La liga de acceso a la aplicación es la siguiente: https://proyecto-individual-1-rosa-carmona.onrender.com/docs
-   
+Consistió en la extracción y transformación de las base de datos originales provistas por HENRY. A partir de estas bases de datos se extrae información de diccionarios y listas de diccionarios (sin desanidar) para generar nuevos archivos CSV que se utilizan posteriormente en el EDA y Sistema de Recomendación. Durante esta etapa también se construyó una aplicación utilizando las herramientas FastAPI y Render. La liga de acceso a la aplicación es la siguiente: https://proyecto-individual-1-rosa-carmona.onrender.com/docs. Los archivos CSV que se enlistan en esta sección son los que alimentan todas las funciones que se pueden consultar mediante la API en render (excepto la función del sistema de recomendación).
+
 ### Archivos:
-- ETL_RMCE.ipynb - Se presentan y comentan paso a paso todos los procedimientos aplicados a los datasets. Se incluyen las ligas al repositorio de Google Drive donde se almacena la base de datos proporcionadas por HENRY (movies y credits    datasets).
+- ETL_RMCE.ipynb - Se presentan y comentan paso a paso todos los procedimientos aplicados a los datasets. Se incluyen las ligas al repositorio de Google Drive donde se almacena la base de datos proporcionadas por HENRY (movies y credits datasets).
 - main.py - Contiene las funciones para realizar las consultas a través de la API en Render.
+- movies_dataset_filtrado_RMCE.csv - datos procesados y filtrados del dataset original "movies". 
+- movies_cast_actor_RMCE.csv - relación de los datasets movies y credits (procesados y filtrados) con información referente a los actores de las películas.
+- movies_crew_director.csv - relación de los datasets movies y credits (procesados y filtrados) con información referente a los directores de las películas.
 
 ### 2) Análisis Exploratorio de Datos (EDA)
 Se realizó una exploración y breve análisis a partir de la frecuencia de los valores de las variables con potencial para entrenar un sistema de recomendación de películas.
@@ -18,10 +21,7 @@ Se realizó una exploración y breve análisis a partir de la frecuencia de los 
 - sis_rec_RMCE.csv - Base de datos procesada y filtrada, contiene información únicamente de las variables susceptibles a formar parte del sistema de recomendación.
   
 ## 3) Creación de un modelo Machine Learning para hacer recomendaciones
-Se eligió el modelo Nearest Neighbour para determinar la similitud de las películas a partir de sus valores de género, director, casa productora, país de origen y de ser el caso, colección a la que pertenece. Los archivos CSV que se enlistan en esta sección son los que alimentan a las funciones que se pueden consultar mediante la API en render.
+Se eligió el modelo Nearest Neighbour para determinar la similitud de las películas a partir de sus valores de género, director, casa productora, país de origen y de ser el caso, colección a la que pertenece. Los archivos CSV que se enlistan en esta sección son los que alimentan a las funciones que se pueden consultar mediante la API en render. El archivo CSV que se menciona en esta sección contiene el dataset que alimenta la función del sistema de recomendación en la API en render (ver enlace en la sección 1)
 
 ### Archivos:
-- movies_dataset_filtrado_RMCE.csv - datos procesados y filtrados del dataset original "movies". 
-- movies_cast_actor_RMCE.csv - relación de los datasets movies y credits (procesados y filtrados) con información referente a los actores de las películas.
-- movies_crew_director.csv - relación de los datasets movies y credits (procesados y filtrados) con información referente a los directores de las películas.
-- sis_rec_RMCE_reduced.csv - contiene únicamente el título de las películas y las variables que se usaron para entrenar el sistema de recomendación. 
+- sis_rec_RMCE_reduced.csv - contiene únicamente el título de las películas y las variables que se usaron para entrenar el sistema de recomendación. Los valores de estas variables están almacenados en el campo 'features' como una cadena de texto.
