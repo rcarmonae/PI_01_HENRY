@@ -4,5 +4,8 @@ El Proyecto Individual 1 HENRY: Machine Learning Operations consiste en un proye
 A continuación, se describen los procesos y archivos correspondientes a cada fase, los cuales se encuentran en este repositorio:
 
 1) Procesamiento de los datos y creación de una API
+   Consistió en la extracción y transformación de las base de datos originales provistas por HENRY. A partir de estas bases de datos se extrae información de diccionarios y listas de diccionarios (sin desanidar) para generar nuevos archivos CSV que se utilizan posteriormente en el EDA y Sistema de Recomendación.
+Archivos:
+ETL_RMCE.ipynb - Se presentan y comentan paso a paso todos los procedimientos aplicados a los datasets. Se incluyen las ligas al repositorio de Google Drive donde se almacena la base de datos proporcionadas por HENRY (movies y credits datasets).
 
-2) Creación de un modelo Machine Learning para hacer recomendaciones
+3) Creación de un modelo Machine Learning para hacer recomendaciones
